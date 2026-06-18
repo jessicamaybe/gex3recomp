@@ -1,0 +1,12 @@
+# Widescreen edge-culling — recompile-time instruction patches (stock ROM untouched).
+# Format: <func_name> <vram_hex> <new_word_hex>   ( # comments allowed )
+#
+# WORLD CULL (func_8002A654 BSP traversal): disable LATERAL frustum-plane rejection,
+# keep near/far (tests 1&2) so traversal stays bounded. NOP the cull-branch (beq) at
+# each lateral plane test (delay slots already nop -> beq->0x00000000 is clean).
+#
+# Narrowed to LEFT/RIGHT only (tests 3 & 4, normals $s6+6 / $s6+0xC) — keep TOP/BOTTOM
+# (tests 5 & 6) to avoid vertical over-draw (suspected artifact source). If horizontal
+# edges DON'T fill with this, swap to 0x8002A9AC/0x8002A9C4 instead.
+func_8002A654 0x8002A97C 0x00000000
+func_8002A654 0x8002A994 0x00000000

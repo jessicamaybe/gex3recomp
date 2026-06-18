@@ -1,0 +1,50 @@
+[input]
+symbols_file_path = "Gex3Syms/gex3.syms.toml"
+rom_file_path = "gex3.z64"
+output_func_path = "RecompiledFuncs"
+entrypoint = 0x80000400
+functions_per_output_file = 50
+
+[patches]
+ignored = [
+    "func_80031E70",
+    "func_800729F4",
+    "func_80073470",
+    "func_80073490",
+    "func_80073600",
+    "func_80073620",
+    "func_80073630",
+    "func_80073680",
+    "func_8007AFC8",
+]
+stubs = [
+    "ovl10_func_8012AB68",
+    "ovl10_func_8012ABA4",
+    "ovl18_func_80117848",
+    "ovl6_func_80123B68",
+    "ovl7_func_801262B4",
+    "ovl9_func_80118C44",
+    "ovl9_func_80118C94",
+]
+instruction = [
+    { func = "func_8002A654", vram = 0x8002A97C, value = 0x00000000 },
+    { func = "func_8002A654", vram = 0x8002A994, value = 0x00000000 },
+]
+# Function text hooks: inject a C call at a vram inside a recompiled function.
+# Replaces the deprecated scripts/fix_*.py post-processing. `before_vram`
+# omitted = inject at function entry. The injected text carries its own extern
+# decl; the helpers live in src/ (gex_natives.cpp / gex_audio.cpp).
+hook = [
+    # Boot-race fix (was fix_bootrace.py): emulate hardware's boot mode-0
+    # window so the boot script bootstraps. func_80020D68 is the per-frame
+    # script pump; zero the session-mode word for the first 30 calls.
+    { func = "func_80020D68", text = "{ static int gex3_boot_window = 30; if (gex3_boot_window > 0) { gex3_boot_window--; *(uint32_t*)(rdram + (0x800A6848 & 0x3FFFFFF)) = 0; } }" },
+    # Module-load hook (was fix_modhook.py): notify the native layer after each
+    # scene-module decompress. Injected right after the jal func_80031128 (@
+    # 0x80031410) + delay slot; v0 (ctx->r2) = decompress dest.
+    { func = "func_800313DC", before_vram = 0x80031418, text = "{ extern void gex3_module_loaded(uint8_t* rdram, recomp_context* ctx); gex3_module_loaded(rdram, ctx); }" },
+    # Audio wavetable streaming (was fix_audiotbl.py): fill the ADPCM sample
+    # cache window the port's missing async DMA would leave empty. Injected
+    # after `move $a1,$v0` (@ 0x80068594); a1=ctx->r5 (descriptor), s0=ctx->r16 (addr).
+    { func = "func_80068580", before_vram = 0x80068598, text = "{ extern void gex_fill_window(uint8_t* rdram, uint32_t desc, uint32_t addr); gex_fill_window(rdram, ctx->r5, ctx->r16); }" },
+]
