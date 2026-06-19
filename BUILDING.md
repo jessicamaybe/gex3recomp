@@ -56,12 +56,6 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
 cmake --build build -j"$(nproc)" --target gex3
 ```
 
-> [!IMPORTANT]
-> Configure `build/` against **this** repo. If the directory was copied from
-> another checkout, its `CMakeCache.txt` may point `CMAKE_HOME_DIRECTORY` at a
-> different source tree and your edits silently won't take effect — delete
-> `build/` and reconfigure if so.
-
 ## 6. Run
 
 ```bash
