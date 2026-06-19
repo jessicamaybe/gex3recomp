@@ -14,7 +14,7 @@ patches/*.elf
 patches/*.map
 
 # built RSP file
-rsp/
+#rsp/
 
 # Output C files
 RecompiledFuncs/

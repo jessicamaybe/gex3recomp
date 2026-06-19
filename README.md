@@ -4,6 +4,14 @@
 ## Why?
 I dunno, honestly I've never played gex 3. I don't even know if this recomp gets past the ice level
 
+## TODO:
+- fix the RSP shit
+- Fix framerate patch sucking
+- widescreen object culling
+- nicer rom loading
+- maybe that cool ui idk
+
 
 ## Building
 Building instructions on how to build this project can be found in the [BUILDING.md](BUILDING.md) file.
+
