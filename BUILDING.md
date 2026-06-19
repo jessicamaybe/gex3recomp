@@ -41,7 +41,6 @@ Build `N64Recomp` / `RSPRecomp` (see
 
 ```bash
 lib/N64Recomp/build/N64Recomp gex3.toml              # -> RecompiledFuncs/
-lib/N64Recomp/build/RSPRecomp gex_asp.toml    # audio microcode (rsp/)
 ```
 
 `gex3.toml` and `Gex3Syms/gex3.syms.toml` carry everything the recompiler needs,
